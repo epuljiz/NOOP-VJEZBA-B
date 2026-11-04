@@ -1,0 +1,1 @@
+Sadrži glavnu poslovnu logiku repozitorija, klasu suradnika i definicije njihovih statusa.

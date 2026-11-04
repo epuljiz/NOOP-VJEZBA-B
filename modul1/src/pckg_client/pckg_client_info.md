@@ -1,0 +1,1 @@
+Sadrži izvršnu klasu s main metodom koja simulira rad i suradnju više programera.

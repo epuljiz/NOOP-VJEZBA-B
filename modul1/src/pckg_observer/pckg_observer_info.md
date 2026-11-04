@@ -1,0 +1,1 @@
+Definira sučelja koja uspostavljaju ugovor između promatranog repozitorija i promatrača.

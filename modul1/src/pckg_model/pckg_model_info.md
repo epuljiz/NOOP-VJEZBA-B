@@ -1,0 +1,1 @@
+Sadrži zapise o promjenama koda i sustav za upravljanje verzijama i poviješću commitova.
