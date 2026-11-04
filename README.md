@@ -4,13 +4,13 @@ classDiagram
 
     class Observable {
         <<interface>>
-        +registerObserver(Observer o)
-        +removeObserver(Observer o)
+        +registerObserver(CollaboratorObserver o)
+        +removeObserver(CollaboratorObserver o)
         +notifyObservers(Change change)
         +syncCollaborator(Collaborator c)
     }
 
-    class Observer {
+    class CollaboratorObserver {
         <<interface>>
         +update(Change change)
     }
@@ -20,8 +20,8 @@ classDiagram
         -List~Collaborator~ collaborators
         -List~Change~ commitHistory
         +commit(String description, String code, Collaborator author)
-        +registerObserver(Observer o)
-        +removeObserver(Observer o)
+        +registerObserver(CollaboratorObserver o)
+        +removeObserver(CollaboratorObserver o)
         +notifyObservers(Change change)
         +syncCollaborator(Collaborator c)
     }
@@ -45,7 +45,7 @@ classDiagram
 
     class VersionControlSystem {
         -List~Change~ allCommits
-        +logCommit(Change change0
+        +logCommit(Change change)
         +getHistory() List~Change~
     }
 
@@ -56,7 +56,7 @@ classDiagram
     }
 
     Observable <|.. CodeRepository : implements
-    Observer <|.. Collaborator : implements
+    CollaboratorObserver <|.. Collaborator : implements
     CodeRepository --> Collaborator : manages list
     CodeRepository --> Change : creates/sends
     CodeRepository *-- VersionControlSystem : contains
