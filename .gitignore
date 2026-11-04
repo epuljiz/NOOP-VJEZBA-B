@@ -1,0 +1,11 @@
+# --- INTELLIJ IDEA SPECIFIC ---
+.idea/
+*.iml
+out/
+target/
+
+# ---  JAVA / OS FOLDERI ---
+*.class
+*.log
+.DS_Store
+Thumbs.db
