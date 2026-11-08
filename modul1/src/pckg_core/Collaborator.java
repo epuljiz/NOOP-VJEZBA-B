@@ -15,7 +15,12 @@ public class Collaborator implements CollaboratorObserver {
 
     @Override
     public void update(Change change) {
-        return;
+        if (change.author().equals(this)) {
+            return;
+        }
+
+        System.out.println("[" + name + "] primio obavijest o novom commitu od "
+                + change.author().getName() + ": " + change.description());
     }
 
     public void changeCode(CodeRepository repo, String newCode, String desc){
@@ -31,5 +36,11 @@ public class Collaborator implements CollaboratorObserver {
         repo.registerObserver(this);
     }
 
+    public CollaboratorStatus getStatus() {
+        return status;
+    }
 
+    public String getName() {
+        return name;
+    }
 }
