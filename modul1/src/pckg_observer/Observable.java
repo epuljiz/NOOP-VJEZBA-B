@@ -1,5 +1,8 @@
 package pckg_observer;
 
+import pckg_core.Collaborator;
+import pckg_model.Change;
+
 public interface Observable {
 
     void registerObserver(CollaboratorObserver collaboratorObserver);

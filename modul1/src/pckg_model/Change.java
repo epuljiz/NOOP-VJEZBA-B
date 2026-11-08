@@ -1,5 +1,7 @@
 package pckg_model;
 
+import pckg_core.Collaborator;
+
 import java.time.LocalDateTime;
 
 public class Change {
