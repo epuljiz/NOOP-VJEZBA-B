@@ -15,7 +15,7 @@ public class CodeRepository implements Observable {
     private List<Change> commitHistory = new ArrayList<>();
 
     public void commit(String description, String code, CollaboratorObserver author) {
-        Change change = new Change(description, LocalDateTime.now(), code, (Collaborator) author);
+        Change change = new Change(description, LocalDateTime.now(), code, author);
         commitHistory.add(change);
         currentCode = code;
         notifyObservers(change, author);
