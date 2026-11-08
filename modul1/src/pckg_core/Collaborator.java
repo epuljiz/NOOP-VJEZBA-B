@@ -8,21 +8,27 @@ public class Collaborator implements CollaboratorObserver {
     private String name;
     private CollaboratorStatus status;
 
+    public Collaborator(String name, CollaboratorStatus status) {
+        this.name = name;
+        this.status = status;
+    }
+
     @Override
     public void update(Change change) {
         return;
     }
 
     public void changeCode(CodeRepository repo, String newCode, String desc){
-        System.out.println();
+        repo.commit(desc, newCode, this);
     }
 
-    public goAway(){
-        return;
+    public void goAway(){
+        this.status = CollaboratorStatus.AWAY;
     }
 
-    public rejoin(CodeRepository repo){
-        return;
+    public void rejoin(CodeRepository repo){
+        this.status = CollaboratorStatus.ACTIVE;
+        repo.registerObserver(this);
     }
 
 
