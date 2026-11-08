@@ -13,8 +13,16 @@ public class Collaborator implements CollaboratorObserver {
         return;
     }
 
-    public changeCode(CodeRepository repo, String newCode, String desc){
+    public void changeCode(CodeRepository repo, String newCode, String desc){
         System.out.println();
+    }
+
+    public goAway(){
+        return;
+    }
+
+    public rejoin(CodeRepository repo){
+        return;
     }
 
 
