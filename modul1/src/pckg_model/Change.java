@@ -1,6 +1,7 @@
 package pckg_model;
 
 import pckg_core.Collaborator;
+import pckg_observer.CollaboratorObserver;
 
 import java.time.LocalDateTime;
 
@@ -9,10 +10,10 @@ public class Change {
     private String description;
     private LocalDateTime timestamp;
     private String code;
-    private Collaborator author;
+    private CollaboratorObserver author;
 
 
-    public Change(String description, LocalDateTime timestamp, String code, Collaborator author) {
+    public Change(String description, LocalDateTime timestamp, String code, CollaboratorObserver author) {
         this.description = description;
         this.timestamp = timestamp;
         this.code = code;
@@ -27,7 +28,7 @@ public class Change {
         return timestamp;
     }
 
-    public String getAuthor() {
+    public CollaboratorObserver getAuthor() {
         return author;
     }
 
