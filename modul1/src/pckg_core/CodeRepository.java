@@ -1,6 +1,7 @@
 package pckg_core;
 
 import pckg_model.Change;
+import pckg_model.VersionControlSystem;
 import pckg_observer.CollaboratorObserver;
 import pckg_observer.Observable;
 
@@ -12,13 +13,17 @@ public class CodeRepository implements Observable {
 
     private String currentCode = "";
     private List<CollaboratorObserver> collaborators = new ArrayList<>();
-    private List<Change> commitHistory = new ArrayList<>();
+    private VersionControlSystem vcs = new VersionControlSystem();
 
     public void commit(String description, String code, CollaboratorObserver author) {
         Change change = new Change(description, LocalDateTime.now(), code, author);
-        commitHistory.add(change);
         currentCode = code;
         notifyObservers(change, author);
+        vcs.logCommit(change);
+    }
+
+    public List<Change> getHistory() {
+        return vcs.getHistory();
     }
 
     @Override

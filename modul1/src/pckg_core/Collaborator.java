@@ -20,10 +20,11 @@ public class Collaborator implements CollaboratorObserver {
         }
 
         System.out.println("[" + name + "] primio obavijest o novom commitu od "
-                + change.author().getName() + ": " + change.description());
+                + change.author().toString() + ": " + change.description());
     }
 
     public void changeCode(CodeRepository repo, String newCode, String desc){
+        System.out.println("[" + name + "] napravio commit: " + desc);
         repo.commit(desc, newCode, this);
     }
 
@@ -43,4 +44,12 @@ public class Collaborator implements CollaboratorObserver {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "Collaborator{" +
+                "name='" + name + '\'' +
+                '}';
+    }
+
 }
