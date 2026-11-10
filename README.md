@@ -4,53 +4,17 @@ Projekt prikazuje primjenu **Observer (Promatrač)** obrasca na primjeru sustava
 
 ```mermaid
 classDiagram
-    direction LR
-
     class Observable {
         <<interface>>
-        +registerObserver(CollaboratorObserver o)
-        +removeObserver(CollaboratorObserver o)
-        +notifyObservers(Change change)
-        +syncCollaborator(Collaborator c)
+        +notifyObservers(Change change) void
+        +removeObserver(CollaboratorObserver o) void
+        +registerObserver(CollaboratorObserver o) void
+        +syncCollaborator(CollaboratorObserver o) void
     }
 
     class CollaboratorObserver {
         <<interface>>
-        +update(Change change)
-    }
-
-    class CodeRepository {
-        -String currentCode
-        -List~Collaborator~ collaborators
-        -List~Change~ commitHistory
-        +commit(String description, String code, Collaborator author)
-        +registerObserver(CollaboratorObserver o)
-        +removeObserver(CollaboratorObserver o)
-        +notifyObservers(Change change)
-        +syncCollaborator(Collaborator c)
-    }
-
-    class Collaborator {
-        -String name
-        -CollaboratorStatus status
-        +update(Change change)
-        +changeCode(CodeRepository repo, String newCode, String desc)
-        +goAway()
-        +rejoin(CodeRepository repo)
-    }
-
-    class Change {
-        <<record>>
-        +String description
-        +LocalDateTime timestamp
-        +String code
-        +Collaborator author
-    }
-
-    class VersionControlSystem {
-        -List~Change~ allCommits
-        +logCommit(Change change)
-        +getHistory() List~Change~
+        +update(Change change) void
     }
 
     class CollaboratorStatus {
@@ -59,13 +23,56 @@ classDiagram
         AWAY
     }
 
-    Observable <|.. CodeRepository : implements
+    class Collaborator {
+        -name: String
+        -status: CollaboratorStatus
+        +Collaborator(String, CollaboratorStatus)
+        +changeCode(CodeRepository, String, String) void
+        +toString() String
+        +update(Change) void
+        +goAway() void
+        +rejoin(CodeRepository) void
+        +getName() String
+        +getStatus() CollaboratorStatus
+    }
+
+    class Change {
+        <<record>>
+        +author() CollaboratorObserver
+        +timestamp() LocalDateTime
+        +description() String
+        +code() String
+    }
+
+    class VersionControlSystem {
+        -history: List~Change~
+        +logCommit(Change) void
+        +history() List~Change~
+    }
+
+    class CodeRepository {
+        -collaborators: List~CollaboratorObserver~
+        -history: List~Change~
+        +commit(String, String, CollaboratorObserver) void
+        +registerObserver(CollaboratorObserver) void
+        +removeObserver(CollaboratorObserver) void
+        +notifyObservers(Change) void
+        +syncCollaborator(CollaboratorObserver) void
+    }
+
+    class Main {
+        +main(String[]) void
+    }
+
     CollaboratorObserver <|.. Collaborator : implements
-    CodeRepository --> Collaborator : manages list
-    CodeRepository --> Change : creates/sends
-    CodeRepository *-- VersionControlSystem : contains
-    Collaborator --> CollaboratorStatus : has
-```
+    Observable <|.. CodeRepository : implements
+    Collaborator "1" -- "1" CollaboratorStatus : status
+    CodeRepository "1" o-- "*" CollaboratorObserver : collaborators
+    CodeRepository "1" *-- "*" Change : history
+    VersionControlSystem "1" *-- "*" Change : history
+    CodeRepository ..> VersionControlSystem : creates/uses
+    Main ..> Collaborator : creates
+    Main ..> CodeRepository : creates
 
 ## 2. Detaljna obrazloženja zahtjeva (Fokus na Observer uzorku)
 
@@ -86,6 +93,7 @@ if (change.author().equals(this)) {
     return;
 }
 ```
+
 Ako je suradnik sam autor napravljenog commita, obavijest se ignorira kako se ne bi ponovno okidao vlastiti kod ili stvarale beskonačne petlje obavještavanja.
 Pri promjeni stanja putem goAway(), suradnik mijenja status u AWAY, dok kroz rejoin() vraća status na ACTIVE i ponovno se prijavljuje u skladište.
 
@@ -97,15 +105,38 @@ CodeRepository prolazi kroz listu svih aktivnih observira i svakom poziva update
 
 ## 3. Službena podjela posla
 
-* **Eli Puljiz:**
-  * **Commit:** Inicijalizacija projekta na GitHubu, postavljanje strukture paketnih direktorija (`pckg_model`, `pckg_observer`, `pckg_core`, `pckg_client`) i kreiranje `.gitignore` datoteke.
-  * **Commit:** Izrada osnovnih sučelja Observer uzorka (`Observable` i `CollaboratorObserver`).
-  * **Commit:** Implementacija središnje klase `CodeRepository` (upravljanje listom suradnika, metoda `commit()` s filtriranjem obavješćivanja autora i zaštitom od rekurzije).
-  * **Commit:** Izrada klijentske `Main` klase s cjelovitom simulacijom rada (prijave, odjave i međusobni commitovi).
+## 3. Službena podjela posla
 
-* **Samuel Puljiz:**
-  * **Commit:** Implementacija modela podataka (`Change` record i `CollaboratorStatus` enum).
-  * **Commit:** Izrada `Collaborator` klase s logikom za promjenu statusa (`goAway`, `rejoin`) i sigurnom `update()` metodom protiv kružnih poziva.
-  * **Commit:** Implementacija `VersionControlSystem` klase za vođenje povijesti commitova i proširenje mehanizma za automatsku sinkronizaciju povratnika.
-  * **Commit:** Pisanje i oblikovanje finalne `README.md` dokumentacije s Mermaid dijagramom, obrazloženjima zahtjeva 3–5 i podjelom posla.
+Projekt je izrađen u paru (Eli Puljiz i Samuel Puljiz) dijeljenjem koda preko GitHuba. Rad svakog člana vidljiv je u službenoj povijesti commitova:
 
+### Eli Puljiz (`epuljiz`)
+* **Inicijalizacija i struktura projekta:**
+  * Postavljanje osnovne strukture projekta, paketa (`pckg_model`, `pckg_observer`, `pckg_core`, `pckg_client`) i `.gitignore` datoteke (`feat(setup)`).
+  * Izrada i prilagodba UML dijagrama klasa (`feat(docs)`).
+* **Observer sučelja i logike:**
+  * Izrada `Observable` sučelja (`feat(observer)`).
+  * Refaktoriranje i prilagodba sučelja `Observable` da `syncCollaborator` prima `CollaboratorObserver` sučelje umjesto konkretne klase.
+* **Središnji repozitorij:**
+  * Izrada i implementacija `CodeRepository` klase (`feat(core)`).
+  * Refaktoriranje `commit` metode i `Change` modela da autor promjene radi s `CollaboratorObserver` sučeljem.
+* **Završetak i simulacija:**
+  * Izrada i testiranje `Main` klase s potpunom simulacijom rada tima (`feat(client)`).
+  * Završno refaktoriranje i čišćenje koda (`refactor(core, model)`).
+
+---
+
+### Samuel Puljiz (`WardRR`)
+* **Modeli podataka:**
+  * Izrada `Change` klase / recorda sa svim potrebnim parametrima za praćenje promjena (`feat(model)`).
+  * Refaktoriranje `Change` modela iz klase u Java `record` te izrada `CollaboratorStatus` enuma.
+* **Promatrač (Collaborator):**
+  * Implementacija `Collaborator` klase koja implementira `CollaboratorObserver` s ugrađenom sigurnom `update()` metodom.
+  * Dodavanje funkcionalnosti za odlazak (`goAway`) i ponovno uključivanje (`rejoin`).
+* **Sustav za upravljanje verzijama:**
+  * Implementacija `VersionControlSystem` klase za vođenje povijesti commitova (`feat(core)`).
+* **Dokumentacija:**
+  * Pisanje i proširenje `README.md` dokumenta s detaljima Observer uzorka, obrazloženjima zahtjeva 3–5 i tablicom podjele posla (`docs`).
+
+> **Napomena o izradi dokumentacije:**  
+> Dokumentacija (`README.md`) i njezina vizualna struktura (Mermaid dijagram) oblikovani su uz pomoć AI asistenta (Gemini).
+> Cjelokupna arhitektura sustava, logika koda i implementacija Observer uzorka autorski su rad članova tima uz laganu pripomoć alata UI-a.
