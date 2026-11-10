@@ -73,6 +73,7 @@ classDiagram
     CodeRepository ..> VersionControlSystem : creates/uses
     Main ..> Collaborator : creates
     Main ..> CodeRepository : creates
+```
 
 ## 2. Detaljna obrazloženja zahtjeva (Fokus na Observer uzorku)
 
